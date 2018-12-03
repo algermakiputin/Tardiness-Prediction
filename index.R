@@ -4,14 +4,16 @@ library(shinyjs)
 library(e1071)
 library(klaR)
 library(naivebayes)
- 
-source(file = "DBConnect.r")
 
+source("~/R/Shiny/DBConnect.R")
+classifier = null;
+nb = null;
 ui <- fluidPage(
   
   useShinyjs(),
   tags$head(
     tags$style("
+           
               ul {list-style:none;padding:0;border:solid 1px #eee; border-bottom:0}
               .emp-list{padding:10px;border-bottom:solid 1px #eee}
                ")
@@ -47,18 +49,24 @@ ui <- fluidPage(
                     
                        
                       
-               ),column(width = 9, offset =3,style="padding-top:20px;",
+               ),column(width = 9, offset =2,style="padding-top:20px;",
                      
                     column(width = 3,offset=3,
                            tags$div(
                              style = "text-align:center;border:solid 1px #ddd;padding:5px;",
-                             "Tardy",h4(class="text-center","Yes"))
+                             "Tardy",h4(class="text-center",textOutput("class")))
                             
                            ),
                     column(width = 3,
                            tags$div(
                              style = "text-align:center;border:solid 1px #ddd;padding:5px",
-                             "Probability",h4(class="text-center","85%"))
+                             "Yes",h4(class="text-center",textOutput("yes")))
+                           
+                    ),
+                    column(width = 3,
+                           tags$div(
+                             style = "text-align:center;border:solid 1px #ddd;padding:5px",
+                             "No",h4(class="text-center",textOutput("no")))
                            
                     )
                         
@@ -76,11 +84,11 @@ ui <- fluidPage(
 server <- function(input, output) {
  
   output$plot<- renderPlot({
-   
-      nb <- naive_bayes(Species ~ .,  iris)
-     
+      classifier = getDataset(1);
+      nb <<- naive_bayes(late ~ .,  classifier)
+      
       plot(nb, ask = FALSE,
-           arg.num = list(main = "Naive Bayes Plot"))
+           arg.num = list(main = "Dataset"))
       
        
     
@@ -116,7 +124,26 @@ server <- function(input, output) {
   )
   
   p<- function(x, session, inputname) {
-    print(x["status"]);
+    employeeData = data.frame(
+      "years" = as.integer(x['years']),
+      "marital_status"= as.character(x['status']),
+      'age' = as.integer(x['age']),
+      'education' = as.character(x['education']),
+      'tenure' = as.character(x['tenure']),
+      'department' = as.character(x['department'])
+    );
+    
+    class<- predict(nb, employeeData, type = "class")
+    
+    probability <- predict(nb, employeeData, type = "prob")
+    yes = format(round(as.double(probability[1,"yes"]) * 100), digits=2)
+    no = format(round(as.double(probability[1,"no"]) * 100), digits=2)
+    
+    output$yes <- renderText(paste(yes,"%"));
+    output$no <- renderText(paste(no,"%"));
+    classes = list("Yes", "No")
+   
+    output$class <- renderText(classes[[as.integer(class)]]);
   }
   removeInputHandler("s")
   registerInputHandler("s", p)
