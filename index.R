@@ -13,7 +13,7 @@ ui <- fluidPage(
   useShinyjs(),
   tags$head(
     tags$style("
-           
+              .result {padding:15px;text-align:center;border:solid 1px #ddd;vertical-align:middle }
               ul {list-style:none;padding:0;border:solid 1px #eee; border-bottom:0}
               .emp-list{padding:10px;border-bottom:solid 1px #eee}
                ")
@@ -53,19 +53,19 @@ ui <- fluidPage(
                      
                     column(width = 3,offset=3,
                            tags$div(
-                             style = "text-align:center;border:solid 1px #ddd;padding:5px;",
+                             class = "result",
                              "Tardy",h4(class="text-center",textOutput("class")))
                             
                            ),
                     column(width = 3,
                            tags$div(
-                             style = "text-align:center;border:solid 1px #ddd;padding:5px",
+                             class = "result",
                              "Yes",h4(class="text-center",textOutput("yes")))
                            
                     ),
                     column(width = 3,
                            tags$div(
-                             style = "text-align:center;border:solid 1px #ddd;padding:5px",
+                             class = "result",
                              "No",h4(class="text-center",textOutput("no")))
                            
                     )
@@ -84,11 +84,10 @@ ui <- fluidPage(
 server <- function(input, output) {
  
   output$plot<- renderPlot({
-      classifier = getDataset(1);
+      classifier <<- getDataset(1);
       nb <<- naive_bayes(late ~ .,  classifier)
-      
-      plot(nb, ask = FALSE,
-           arg.num = list(main = "Dataset"))
+  
+      plot(nb)
       
        
     
@@ -109,12 +108,12 @@ server <- function(input, output) {
               age = floor(as.numeric( as.Date(Sys.Date()) - as.Date(employees[i,c("birthday")]) ) / 365.25)
               years = floor(as.numeric( as.Date(Sys.Date()) - as.Date(employees[i,c("date_joining")]) ) / 365.25)
               LL[[i]] <- list(tags$li(employees[i,c("Name")], class ="li emp-list",
-                                      "data-status"=employees[i,c("Marital Status")], 
-                                      "data-years" = years,
-                                      "data-education" = employees[i, c("education")],
-                                      "data-tenure" = employees[i, c("tenure")],
-                                      "data-department" = departmentName[1,c("name")],
-                                      "data-age" = age
+                                      "data-status"= as.character(employees[i,c("Marital Status")]), 
+                                      "data-years" = as.numeric(years),
+                                      "data-education" = as.character(employees[i, c("education")]),
+                                      "data-tenure" = as.character(employees[i, c("tenure")]),
+                                      "data-department" = as.character(departmentName[1,c("name")]),
+                                      "data-age" = as.numeric(age)
                                       
               ))
               
