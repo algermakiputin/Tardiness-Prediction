@@ -90,23 +90,23 @@ server <- function(input, output) {
           output$lb <- renderText(input$campus),
           output$list <- renderUI({
             print(input$campus)
-            q<- paste("SELECT CONCAT(first_name, ' ', last_name) as name,marital_status,tenure,education,department_id FROM employees WHERE campus_id=", input$campus)
+            q<- paste("SELECT CONCAT(first_name, ' ', last_name) as name,marital_status,tenure,education,department_id,birthday, date_joining FROM employees WHERE campus_id=", input$campus)
             employees <- sqlQuery(q)
-            colnames(employees) <- c("Name", "Marital Status", "tenure", "education", "department_id")
+            colnames(employees) <- c("Name", "Marital Status", "tenure", "education", "department_id","birthday", "date_joining")
             
             LL <- vector("list",10)        
             for(i in 1:nrow(employees)){
               departmentName <- sqlQuery(paste("SELECT name FROM departments WHERE id =", employees[i,c("department_id")]))
               colnames(departmentName) <- c("name")
-             
+              age = floor(as.numeric( as.Date(Sys.Date()) - as.Date(employees[i,c("birthday")]) ) / 365.25)
+              years = floor(as.numeric( as.Date(Sys.Date()) - as.Date(employees[i,c("date_joining")]) ) / 365.25)
               LL[[i]] <- list(tags$li(employees[i,c("Name")], class ="li emp-list",
                                       "data-status"=employees[i,c("Marital Status")], 
-                                      "date-years" = employees[i, c("tenure")],
-                                      "date-education" = employees[i, c("education")],
-                                      "date-tenure" = employees[i, c("tenure")],
-                                      "date-department" = departmentName[1,c("name")],
-                                      "date-age" = employees[i, c("tenure")],
-                                      "date-tenure" = employees[i, c("tenure")]
+                                      "data-years" = years,
+                                      "data-education" = employees[i, c("education")],
+                                      "data-tenure" = employees[i, c("tenure")],
+                                      "data-department" = departmentName[1,c("name")],
+                                      "data-age" = age
                                       
               ))
               
@@ -116,7 +116,7 @@ server <- function(input, output) {
   )
   
   p<- function(x, session, inputname) {
-    print(x[['test']])
+    print(x["status"]);
   }
   removeInputHandler("s")
   registerInputHandler("s", p)
@@ -125,8 +125,21 @@ server <- function(input, output) {
   shinyjs::runjs(
     '
       $("#emp_list").on("click",".li",function(){
-          status = $(this).data("status"); 
-          Shiny.setInputValue("coord:s", {test: status});
+          status = $(this).data("status");
+          years = $(this).data("years");
+          education = $(this).data("education");
+          tenure = $(this).data("tenure");
+          department = $(this).data("department");
+          age = $(this).data("age");
+    
+          Shiny.setInputValue("coord:s", {
+                                  status : status,
+                                  years : years,
+                                  education : education,
+                                  tenure : tenure,
+                                  department : department,
+                                  age : age
+                              });
     
       });
  

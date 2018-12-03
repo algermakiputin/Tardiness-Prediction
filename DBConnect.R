@@ -20,7 +20,7 @@ sqlQuery <- function (query) {
 employees<- sqlQuery("SELECT * FROM employees WHERE employment_type = 1")
  
 datasets = data.frame(
-  "years" = character(0),
+  "years" = integer(0),
   "marital_status"= character(0),
   'age' = integer(0),
   'education' = character(0),
@@ -50,13 +50,13 @@ apply(employees, 1, function(x,s){
       late = "yes";
     }
     
-    datasets<<- rbind(datasets, data.frame("years" = 1,
-                                          "marital_status"= x['marital_status'],
-                                          'age' = 21,
-                                          'education' = x['education'],
-                                          'tenure' = x['tenure'],
-                                          'department' = departmentName['name'],
-                                          'late' = late))
+    datasets<<- rbind(datasets, data.frame("years" = as.integer(floor(as.numeric( as.Date(Sys.Date()) - as.Date(x['date_joining']) ) / 365.25)),
+                                          "marital_status"= as.character(x['marital_status']),
+                                          'age' = as.integer(floor(as.numeric( as.Date(Sys.Date()) - as.Date(x['birthday']) ) / 365.25)),
+                                          'education' = as.character(x['education']),
+                                          'tenure' = as.character(x['tenure']),
+                                          'department' = as.character(departmentName['name']),
+                                          'late' = as.character(late)))
   })
   
 }) 
