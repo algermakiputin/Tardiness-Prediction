@@ -12,10 +12,15 @@ ui <- fluidPage(
   
   useShinyjs(),
   tags$head(
+    tags$link(rel="stylesheet", type="text/css", href="style.css"),
     tags$style("
               .result {padding:15px;text-align:center;border:solid 1px #ddd;vertical-align:middle }
               ul {list-style:none;padding:0;border:solid 1px #eee; border-bottom:0}
               .emp-list{padding:10px;border-bottom:solid 1px #eee}
+              .topmenu {background-color:#f4f4f5;border:solid 1px #ddd;min-height:76px;vertical-align:middle}
+              .align-middle {padding:20px 0}
+              #emp_list li:hover {background-color: #eee;cursor:pointer;box-shadow:0 0 0 3px #eee;color:#777}
+              .emp-list.active {background-color:#eee;box-shadow:0 0 0 3px #eee;color:#777}
                ")
   ),
  
@@ -25,14 +30,31 @@ ui <- fluidPage(
     column(width = 10, offset = 1, 
             
            fluidRow(style="padding:30px 0;",
-             column(width = 12, 
-                   inputPanel(
-                     selectInput("campus", "Select Campus",
-                                 choices = list("Mintal" = 1, "Jacinto" = 2), selected = 1
-                                 )
-                   
+             column(
+               width = 12,
+               column(width = 3,class="topmenu",
+                      style="border-right:0"
+                      , 
+                      
+                      selectInput("campus", "Select Campus",
+                                  choices = list("Mintal" = 1, "Jacinto" = 2), selected = 1
+                      )
+                      
+                      
+               ),
+               column(width = 9,class="topmenu text-center align-middle",style="border-left:0",
+                    
+                         actionButton("plotage", "Age"),
+                         actionButton("plotyears", "Years"),
+                        actionButton("plotdepartment", "Department"),
+                        actionButton("plotstatus", "Status"),
+                        actionButton("plottenure", "Tenure"),
+                        actionButton("ploteducation", "Education") 
+                               
                      
-                   )),
+                      
+               )
+             ),
                     
              
                column(width = 3,
@@ -44,8 +66,8 @@ ui <- fluidPage(
                       
                ),
                column(width = 9,
-                      
-                  plotOutput("plot")
+                  
+                  plotOutput("plot",width="100%")
                     
                        
                       
@@ -86,17 +108,65 @@ server <- function(input, output) {
   output$plot<- renderPlot({
       classifier <<- getDataset(1);
       nb <<- naive_bayes(late ~ .,  classifier)
-  
       plot(nb)
-      
-       
+  })
+  observeEvent(input$campus, {
+    output$plot<- renderPlot({
+      classifier <<- getDataset(input$campus);
+      nb <<- naive_bayes(late ~ ., data = classifier, userkernel = true)
+      if (!as.integer(nrow(classifier)) >= 10) {
+        classifier<<- 0
+        return(plot(0))
+      }
+        
+      plot(nb,"years",col="yellow")
+    })
+  })
+  
+  observeEvent(input$plotage, {
+    output$plot <- renderPlot({
+      plot(nb,"age")
+    })
     
   })
+  
+  observeEvent(input$plotyears, {
+    output$plot <- renderPlot({
+      plot(nb,"years")
+    })
+    
+  })
+  observeEvent(input$ploteducation, {
+    output$plot <- renderPlot({
+      plot(nb,"education")
+    })
+    
+  })
+  observeEvent(input$plotstatus, {
+    output$plot <- renderPlot({
+      plot(nb,"marital_status")
+    })
+    
+  })
+  observeEvent(input$plottenure, {
+    output$plot <- renderPlot({
+      plot(nb,"tenure")
+    })
+    
+  })
+  observeEvent(input$plotdepartment, {
+    output$plot <- renderPlot({
+      plot(nb,"department")
+    })
+    
+  })
+
+  
   sample.int(3 , 100 , replace = T)
   onevent("change", "campus", 
           output$lb <- renderText(input$campus),
           output$list <- renderUI({
-            print(input$campus)
+        
             q<- paste("SELECT CONCAT(first_name, ' ', last_name) as name,marital_status,tenure,education,department_id,birthday, date_joining FROM employees WHERE campus_id=", input$campus)
             employees <- sqlQuery(q)
             colnames(employees) <- c("Name", "Marital Status", "tenure", "education", "department_id","birthday", "date_joining")
@@ -141,6 +211,7 @@ server <- function(input, output) {
     output$yes <- renderText(paste(yes,"%"));
     output$no <- renderText(paste(no,"%"));
     classes = list("Yes", "No")
+  
    
     output$class <- renderText(classes[[as.integer(class)]]);
   }
@@ -151,6 +222,10 @@ server <- function(input, output) {
   shinyjs::runjs(
     '
       $("#emp_list").on("click",".li",function(){
+        
+          $(".emp-list").removeClass("active");
+          $(this).addClass("active");
+ 
           status = $(this).data("status");
           years = $(this).data("years");
           education = $(this).data("education");
@@ -168,7 +243,8 @@ server <- function(input, output) {
                               });
     
       });
- 
+      
+     
     '
   )
   
