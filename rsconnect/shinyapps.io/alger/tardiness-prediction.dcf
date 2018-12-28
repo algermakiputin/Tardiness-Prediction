@@ -1,0 +1,12 @@
+name: tardiness-prediction
+title: tardiness-prediction
+username:
+account: alger
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 623076
+bundleId: 1786293
+url: https://alger.shinyapps.io/tardiness-prediction/
+when: 1545966850.25043
+asMultiple: FALSE
+asStatic: FALSE
