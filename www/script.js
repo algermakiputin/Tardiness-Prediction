@@ -12,6 +12,7 @@ $(document).ready(function() {
 		tenure = $(this).data("tenure");
 		department = $(this).data("department");
 		age = $(this).data("age");
+		name = $(this).text();
 
 		Shiny.setInputValue("coord:s", {
 			status : status,
@@ -19,7 +20,8 @@ $(document).ready(function() {
 			education : education,
 			tenure : tenure,
 			department : department,
-			age : age
+			age : age,
+			name : name
 		});
 
 	});

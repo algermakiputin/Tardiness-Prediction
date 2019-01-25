@@ -181,8 +181,9 @@ server <<- function(input, output) {
     class<- predict(nb, employeeData, type = "class")
     
     showModal(
-      modalDialog(id ="prediction-result",title = "Prediction Result",
+      modalDialog(id ="prediction-result",title = "Prediction Result:",
                   tags$div(style="padding:20px", id ="results", class="text-center",
+                           h3(x['name']),
                            fluidRow(
                              column(width = 3, style = "margin-left:14.5%", 
                                     tags$div(
