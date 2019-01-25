@@ -83,14 +83,15 @@ server <<- function(input, output) {
       }
       
       shinyjs::hide("results");
-    }, height =  500)
+     
+    }, height =  560)
   })
   
   observeEvent(input$plotage, {
     output$plot <- renderPlot({
       
       plot(nb,"age")
-    }, height = 500)
+    }, height = 560)
     
   })
   
@@ -98,35 +99,35 @@ server <<- function(input, output) {
     output$plot <- renderPlot({
       
       plot(nb,"years")
-    }, height = 500)
+    }, height = 560)
     
   })
   observeEvent(input$ploteducation, {
     output$plot <- renderPlot({
       
       plot(nb,"education")
-    }, height = 500)
+    }, height = 560)
     
   })
   observeEvent(input$plotstatus, {
     output$plot <- renderPlot({
       
       plot(nb,"marital_status")
-    }, height = 500)
+    }, height = 560)
     
   })
   observeEvent(input$plottenure, {
     output$plot <- renderPlot({
       
       plot(nb,"tenure")
-    }, height = 500)
+    }, height = 560)
     
   })
   observeEvent(input$plotdepartment, {
     output$plot <- renderPlot({
       
       plot(nb,"department")
-    }, height = 500)
+    }, height = 560)
     
   })
   
@@ -179,17 +180,52 @@ server <<- function(input, output) {
     
     class<- predict(nb, employeeData, type = "class")
     
+    showModal(
+      modalDialog(id ="prediction-result",title = "Prediction Result",
+                  tags$div(style="padding:20px", id ="results", class="text-center",
+                           fluidRow(
+                             column(width = 3, style = "margin-left:14.5%", 
+                                    tags$div(
+                                      class = "result",
+                                      "Late",h4(class="text-center",textOutput("class")))
+                                    
+                             ),
+                             column(width = 3,
+                                    tags$div(
+                                      class = "result",
+                                      "Yes",h4(class="text-center",textOutput("yes")))
+                                    
+                             ),
+                             column(width = 3,
+                                    tags$div(
+                                      class = "result",
+                                      "No",h4(class="text-center",textOutput("no")))
+                                    
+                             )
+                           )
+                           
+                           
+                           
+                           
+                           
+                  ),
+                  easyClose = TRUE
+      )
+    )  
+    
     probability <- predict(nb, employeeData, type = "prob")
     yes = format(round(as.double(probability[1,"yes"]) * 100), digits=2)
     no = format(round(as.double(probability[1,"no"]) * 100), digits=2)
-    
+ 
+    shinyjs::hide("results");
+
     output$yes <- renderText(paste(yes,"%"));
     output$no <- renderText(paste(no,"%"));
     classes = list("Yes", "No")
-    
-    
+
     output$class <- renderText(classes[[as.integer(class)]]);
     shinyjs::show("results");
+ 
   }
   removeInputHandler("s")
   registerInputHandler("s", p)

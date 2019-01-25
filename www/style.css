@@ -8,8 +8,7 @@
 ul {
 	list-style:none;
 	padding:0;
-	border:solid 1px #eee; 
-	border-bottom:0
+	border:solid 1px #eee;  
 }
 .li {
 	padding:10px;
@@ -36,5 +35,20 @@ ul {
 #list {
 	max-height: 550px; 
 	overflow:auto;
+	direction:ltr;
  
+}
+
+#list::-webkit-scrollbar {
+    width: 12px;
+}
+
+#list::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+
+#list::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }

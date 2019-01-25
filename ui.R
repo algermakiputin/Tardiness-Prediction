@@ -73,32 +73,7 @@ ui <<- fluidPage(
                                       withSpinner(plotOutput("plot",width="100%"))
                                       
                                       
-                                      ),
-                               tags$div(style="padding-top:20px;display:none", id ="results", class="text-center",
-                                       
-                                       
-                                       column(width = 3, style = "margin-left:14.5%", 
-                                              tags$div(
-                                                class = "result",
-                                                "Late",h4(class="text-center",textOutput("class")))
-                                              
-                                       ),
-                                       column(width = 3,
-                                              tags$div(
-                                                class = "result",
-                                                "Yes",h4(class="text-center",textOutput("yes")))
-                                              
-                                       ),
-                                       column(width = 3,
-                                              tags$div(
-                                                class = "result",
-                                                "No",h4(class="text-center",textOutput("no")))
-                                              
-                                       )
-                                       
-                                       
-                                       
-                               )
+                                      )
                                
                              )
                              

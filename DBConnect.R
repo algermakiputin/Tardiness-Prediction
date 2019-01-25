@@ -9,7 +9,7 @@ library(shinyjs)
 
 sqlQuery <- function (query) {
 
-  DB <- dbConnect(MySQL(), user="root", password='', dbname='hris', host='localhost')
+  DB <- dbConnect(MySQL(), user="bb5079f5cfb4a6", password='5002d268', dbname='heroku_298d50bdf7908a3', host='us-cdbr-iron-east-01.cleardb.net',port=3306)
   on.exit(dbDisconnect(DB))
   rs <- dbSendQuery(DB, query)
   
