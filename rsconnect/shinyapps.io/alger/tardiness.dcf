@@ -5,8 +5,8 @@ account: alger
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 624047
-bundleId: 1836436
+bundleId: 1867913
 url: https://alger.shinyapps.io/tardiness/
-when: 1548420550.88302
+when: 1549847351.936
 asMultiple: FALSE
 asStatic: FALSE

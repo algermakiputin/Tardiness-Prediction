@@ -5,6 +5,7 @@ library(naivebayes)
 library(shiny)
 library(shinycssloaders)
 library(shinyjs)
+library(lubridate)
 
 ui <<- fluidPage(
   
@@ -13,7 +14,6 @@ ui <<- fluidPage(
       tags$link(includeCSS("www/style.css")),
       includeScript("www/script.js")
     ),
-  
   
   
   fluidRow(

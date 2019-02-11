@@ -5,11 +5,13 @@ library(naivebayes)
 library(shiny)
 library(shinycssloaders)
 library(shinyjs)
+library(lubridate)
 
 classifier = "";
 nb = "";
 
 server <<- function(input, output) {
+  
   observeEvent(input$newemployee, {
     showModal(
       modalDialog(id ="modal",title = "New Employee",
@@ -62,10 +64,11 @@ server <<- function(input, output) {
   observeEvent(input$campus, {
     output$plot<- renderPlot({
       classifier <<- getDataset(input$campus);
-    
-      if (classifier != "") {
-        nb <<- naive_bayes(late ~ ., data = classifier)
-        (plot(nb,"years"))
+ 
+      if (classifier != "" & as.integer(nrow(classifier)) > 50) {
+        nb <<- naive_bayes(late ~ ., data = classifier, usekernel = TRUE)
+     
+        plot(nb, 'years', legend = TRUE)
         shinyjs::enable("plotage")
         shinyjs::enable("plotyears")
         shinyjs::enable("plotdepartment")
@@ -90,7 +93,7 @@ server <<- function(input, output) {
   observeEvent(input$plotage, {
     output$plot <- renderPlot({
       
-      plot(nb,"age")
+      plot(nb,"age", legend = TRUE)
     }, height = 560)
     
   })
@@ -98,39 +101,42 @@ server <<- function(input, output) {
   observeEvent(input$plotyears, {
     output$plot <- renderPlot({
       
-      plot(nb,"years")
+      plot(nb,"years", legend = TRUE)
     }, height = 560)
     
   })
   observeEvent(input$ploteducation, {
     output$plot <- renderPlot({
       
-      plot(nb,"education")
+      plot(nb,"education", legend = TRUE)
     }, height = 560)
     
   })
   observeEvent(input$plotstatus, {
     output$plot <- renderPlot({
       
-      plot(nb,"marital_status")
+      plot(nb,"marital_status", legend = TRUE)
     }, height = 560)
     
   })
   observeEvent(input$plottenure, {
     output$plot <- renderPlot({
       
-      plot(nb,"tenure")
+      plot(nb,"tenure", legend = TRUE)
     }, height = 560)
     
   })
   observeEvent(input$plotdepartment, {
     output$plot <- renderPlot({
       
-      plot(nb,"department")
+      plot(nb,"department", legend = TRUE)
     }, height = 560)
     
   })
   
+  campuses <- sqlQuery("SELECT * FROM campuses");
+  
+
   
   sample.int(3 , 100 , replace = T)
   onevent("change", "campus", 
@@ -140,6 +146,11 @@ server <<- function(input, output) {
             q<- paste("SELECT CONCAT(first_name, ' ', last_name) as name,marital_status,tenure,education,department_id,birthday, date_joining FROM employees WHERE campus_id=", input$campus)
             employees <- sqlQuery(q)
             
+            if (nrow(employees) < 10) {
+              output$plot<- renderPlot({
+                plot(0)
+              });
+            }
             if (nrow(employees)) {
               colnames(employees) <- c("Name", "Marital Status", "tenure", "education", "department_id","birthday", "date_joining")
               
@@ -149,6 +160,12 @@ server <<- function(input, output) {
                 colnames(departmentName) <- c("name")
                 age = floor(as.numeric( as.Date(Sys.Date()) - as.Date(employees[i,c("birthday")], "%Y-%m-%d" ) ) / 365.25)
                 years = floor(as.numeric( as.Date(Sys.Date()) - as.Date(employees[i,c("date_joining")], "%Y-%m-%d" ) ) / 365.25)
+                
+                if (as.integer(employees[i, c("tenure")]) == 1) {
+                  employees[i, c("tenure")] = "Yes";
+                }else {
+                  employees[i, c("tenure")] = "No"
+                }
                 LL[[i]] <- list(tags$li(employees[i,c("Name")], class ="li emp-list",
                                         "data-status"= as.character(employees[i,c("Marital Status")]), 
                                         "data-years" = as.numeric(years),
@@ -162,8 +179,9 @@ server <<- function(input, output) {
               } 
               return(LL)
             }else {
+              
               return(tags$p("No records found", style="padding:5px;"))
-            } 
+            }
             
           })
   )
@@ -179,7 +197,7 @@ server <<- function(input, output) {
     );
     
     class<- predict(nb, employeeData, type = "class")
-    
+    print(class)
     showModal(
       modalDialog(id ="prediction-result",title = "Prediction Result:",
                   tags$div(style="padding:20px", id ="results", class="text-center",
@@ -222,8 +240,8 @@ server <<- function(input, output) {
 
     output$yes <- renderText(paste(yes,"%"));
     output$no <- renderText(paste(no,"%"));
-    classes = list("Yes", "No")
-
+    classes = list("No", "Yes")
+  
     output$class <- renderText(classes[[as.integer(class)]]);
     shinyjs::show("results");
  
