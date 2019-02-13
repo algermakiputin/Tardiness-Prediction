@@ -68,7 +68,7 @@ server <<- function(input, output) {
       if (classifier != "" & as.integer(nrow(classifier)) > 50) {
         nb <<- naive_bayes(late ~ ., data = classifier, usekernel = TRUE)
      
-        plot(nb, 'years', legend = TRUE)
+        plot(nb, 'age', legend = TRUE)
         shinyjs::enable("plotage")
         shinyjs::enable("plotyears")
         shinyjs::enable("plotdepartment")

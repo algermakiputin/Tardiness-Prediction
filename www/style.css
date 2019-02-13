@@ -33,7 +33,7 @@ ul {
 	box-shadow:0 0 0 3px #eee;
 }
 #list {
-	max-height: 550px; 
+	max-height: 480px; 
 	overflow:auto;
 	direction:ltr;
  

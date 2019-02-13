@@ -25,6 +25,13 @@ $(document).ready(function() {
 		});
 
 	});
+	
+	$("#search").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#emp_list li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
 
 	$("body").on("click", "#addnewemployee", function(){
 		var name = $("[name=name]").val(); 

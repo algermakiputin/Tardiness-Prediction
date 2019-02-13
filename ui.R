@@ -61,6 +61,9 @@ ui <<- fluidPage(
                       
                       column(width = 3,
                              h4(id="label_emp","Employees"),
+                             tags$div( class="form-group",
+                               tags$input(type = "text", class="form-control", id="search", placeholder = "Search...")
+                             ),
                              tags$ul(id="emp_list",
                                      withSpinner(uiOutput("list", height="auto"))
                              )
