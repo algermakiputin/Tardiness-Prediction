@@ -9,8 +9,8 @@ insights for tardy employees that would enable the companies to take precautions
 against this issue. In this project, I worked on this problem to predict employees’
 tardiness. The prediction model is built with a data mining method it makes use of detailed
 employee information like age, years of experience, gender, marital status, department,
-and tenure. The datasets that we used in this study are employees’ datasets that contains
+and tenure. The datasets that is used in this study are employees’ datasets that contains
 40 rows and 23 columns and attendance datasets that contains 1450 rows and 6 columns
 from a private school in Davao City. Both datasets contain an id that we can use to connect  
-them with each other. In this study, we will be focusing on applying the Naive Bayes
-Algorithm to discover patterns in the dataset to predict employees’ tardiness.
+them with each other. This project applied the Naive Bayes
+Algorithm to discover patterns in the dataset to forecast employees’ tardiness.
