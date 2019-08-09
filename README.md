@@ -1,5 +1,5 @@
 # Tardiness-Prediction
-Classification data mining base on naive bayes for predicting employee tardiness
+Classification data mining base on naive bayes Algorithm for predicting employee tardiness
 
 Employee tardiness is a major problem for many companies because it prevents
 employees to become fully productive at work. Hence, preventing or reducing employees
